@@ -1,0 +1,23 @@
+{
+  "name": "google-maps-sample",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "babyparse": "^0.4.6",
+    "google-maps-react": "^1.1.0",
+    "papaparse": "^4.3.5",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-file-reader": "^1.1.1"
+  },
+  "devDependencies": {
+    "prop-types": "^15.5.10",
+    "react-scripts": "0.9.5"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
