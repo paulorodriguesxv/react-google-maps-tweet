@@ -23,7 +23,7 @@ class App extends Component {
       reader.readAsText(files[0]);
   }
   
-  markers = [
+  tweets = [
     {id: 1, location: "Santa Catarina, SC", text: "tweet 1"},
     {id: 2, location: "São Paulo, SP", text: "tweet 2"},
     {id: 3, location: "Barbacena, MG", text: "tweet 3"}
@@ -44,7 +44,7 @@ class App extends Component {
       <button className='btn'>Upload</button>
     </ReactFileReader>    
 
-        <MapContainer markers={this.markers}/>
+        <MapContainer tweets={this.tweets}/>
       </div>
     );
   }

@@ -6,6 +6,22 @@ import {Map, InfoWindow, Marker, GoogleApiWrapper} from 'google-maps-react';
 
 export class MapContainer extends React.Component {
 
+  constructor(){
+    super();
+    this.state = {markers: []};
+  }
+
+  onMapReady =(mapProps, map) => {
+    const {google} = mapProps;
+    const service = new google.maps.Geocoder();
+    const maps = google.maps;
+
+    this.props.tweets.map((tweet) => {
+        this.geocodeAddress(service, maps, tweet);
+      }
+    );    
+  }
+  
   renderTweet = (tweet, location) => {
 
     return <Marker
@@ -14,16 +30,20 @@ export class MapContainer extends React.Component {
                 position={location} />
   }
   
-  codeAddress = (maps, tweet, onResp) => {
-
+  geocodeAddress = (service, maps, tweet) => {
     let address = tweet.location;
-    let geocoder = new maps.Geocoder();
-    let renderTweet = this.renderTweet; 
 
-    geocoder.geocode({ 'address': address }, function(results, status) {
+    service.geocode({ 'address': address }, function(results, status) {
           if (status === maps.GeocoderStatus.OK) {
             let location = results[0].geometry.location;
 
+            const markers = this.state.markers.slice();
+
+            markers.push(this.renderTweet(tweet, location));
+
+            this.setState({
+              markers: markers
+            });
             console.log(location.lat() + " " + location.lng());
             
             return location;
@@ -43,22 +63,17 @@ export class MapContainer extends React.Component {
     
   }
 
-
   render() {
     if (!this.props.loaded) {
       return <div>Loading...</div>
     }
 
-    let markers = [
-      this.renderTweet(this.props.markers[0], {lat: -27, lng:-48})  
-    ]
-
-    this.processTweets(this.props.google.maps, this.props.markers);
-    
+    //this.processTweets(this.props.google.maps, this.props.markers);
     return (
       <Map google={this.props.google} zoom={5}
+        onReady={this.onMapReady}
         centerAroundCurrentLocation={true}>       
-        {markers}
+        {this.state.markers}
       </Map>
     );
   }
