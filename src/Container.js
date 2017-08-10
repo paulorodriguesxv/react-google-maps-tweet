@@ -9,6 +9,12 @@ export class MapContainer extends React.Component {
     this.state = {markers: []};
   }
 
+  componentWillReceiveProps(nextProps) {
+
+    //console.log("executing componentWillReceiveProps....");
+
+  }
+
   // On map ready, process geocoder for each tweet
   onMapReady = (mapProps, map) => {
     const {google} = mapProps;
