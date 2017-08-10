@@ -1,8 +1,6 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import ReactDOM from 'react-dom'
 
-import {Map, InfoWindow, Marker, GoogleApiWrapper} from 'google-maps-react';
+import {Map, Marker, GoogleApiWrapper} from 'google-maps-react';
 
 export class MapContainer extends React.Component {
 
@@ -11,56 +9,48 @@ export class MapContainer extends React.Component {
     this.state = {markers: []};
   }
 
-  onMapReady =(mapProps, map) => {
+  // On map ready, process geocoder for each tweet
+  onMapReady = (mapProps, map) => {
     const {google} = mapProps;
     const service = new google.maps.Geocoder();
-    const maps = google.maps;
 
     this.props.tweets.map((tweet) => {
-        this.geocodeAddress(service, maps, tweet);
+        this.geocodeAddress(service, tweet);
       }
     );    
   }
   
+  // Create a marker
   renderTweet = (tweet, location) => {
-
     return <Marker
                 key={tweet.id}
                 title={tweet.text}
                 position={location} />
   }
   
-  geocodeAddress = (service, maps, tweet) => {
+  // Return location (google maps api) from given address
+  geocodeAddress = (service, tweet) => {
     let address = tweet.location;
+    const {google} = this.props;
+    const maps = google.maps;
 
-    service.geocode({ 'address': address }, function(results, status) {
+    service.geocode({ 'address': address }, (results, status) => {
           if (status === maps.GeocoderStatus.OK) {
             let location = results[0].geometry.location;
 
+            // lets keep markers immutable
             const markers = this.state.markers.slice();
-
             markers.push(this.renderTweet(tweet, location));
 
             this.setState({
               markers: markers
             });
-            console.log(location.lat() + " " + location.lng());
             
-            return location;
           } else {
+            // Oops, something was wrong
             console.log("Geocode unsuccessful:" + address);
           }
         });
-  }
-
-
-  processTweets = (maps, tweets) => {
-
-    tweets.map((tweet) => {
-        this.codeAddress(maps, tweet);
-      }
-    );
-    
   }
 
   render() {
@@ -68,7 +58,6 @@ export class MapContainer extends React.Component {
       return <div>Loading...</div>
     }
 
-    //this.processTweets(this.props.google.maps, this.props.markers);
     return (
       <Map google={this.props.google} zoom={5}
         onReady={this.onMapReady}

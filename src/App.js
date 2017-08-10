@@ -6,15 +6,41 @@ import ReactFileReader from 'react-file-reader';
 import Papa from 'papaparse';
 
 class App extends Component {
+ 
+  constructor(){
+    super();
+    this.state = {
+      tweets: []
+    }
+  } 
+  
+  componentDidMount(){
+    this.setState({
+      tweets: [
+        {id:"1", text:"Ola mmundo", location:"Florianópolis"},
+        {id:"2", text:"Ola mmundo", location:"São Paulo" },
+        {id:"3", text:"Ola mmundo", location:"Curitiba" }]      
+    })
+  }
+
   handleFiles = files => {
       var reader = new FileReader();
 
-      reader.onload = function(e) {
+      reader.onload = (e) => {
         var text = reader.result;
-
+        console.log(this.state.tweets);
         Papa.parse(text, {
-            step: function (row) {
-              console.log("Row:", row.data);
+            step: (row) => {
+              
+              const tweet = {id: row.data[0][0], text: row.data[0][1], location: row.data[0][2] };
+              const tweets = this.state.tweets.slice();
+              tweets.push(tweet);
+              
+              console.log("Row:", tweet);
+
+              this.setState({
+                tweets: tweets
+              });               
             }
           }
         )        
@@ -22,12 +48,6 @@ class App extends Component {
       
       reader.readAsText(files[0]);
   }
-  
-  tweets = [
-    {id: 1, location: "Santa Catarina, SC", text: "tweet 1"},
-    {id: 2, location: "São Paulo, SP", text: "tweet 2"},
-    {id: 3, location: "Barbacena, MG", text: "tweet 3"}
-  ]
 
   render() {
     
@@ -40,11 +60,11 @@ class App extends Component {
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
-    <ReactFileReader handleFiles={this.handleFiles} fileTypes={'.csv'}>
-      <button className='btn'>Upload</button>
-    </ReactFileReader>    
+        <ReactFileReader handleFiles={this.handleFiles} fileTypes={'.csv'}>
+          <button className='btn'>Upload</button>
+        </ReactFileReader>    
 
-        <MapContainer tweets={this.tweets}/>
+        <MapContainer tweets={this.state.tweets}/>
       </div>
     );
   }
