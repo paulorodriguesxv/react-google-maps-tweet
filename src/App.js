@@ -16,10 +16,7 @@ class App extends Component {
   
   componentDidMount(){
     this.setState({
-      tweets: [
-        {id:"1", text:"Ola mmundo", location:"Florianópolis"},
-        {id:"2", text:"Ola mmundo", location:"São Paulo" },
-        {id:"3", text:"Ola mmundo", location:"Curitiba" }]      
+      tweets: [{id:1, text: "blah", location:"Porto Alegre, Brasil"}]
     })
   }
 
@@ -35,8 +32,6 @@ class App extends Component {
               const tweet = {id: row.data[0][0], text: row.data[0][1], location: row.data[0][2] };
               const tweets = this.state.tweets.slice();
               tweets.push(tweet);
-              
-              console.log("Row:", tweet);
 
               this.setState({
                 tweets: tweets

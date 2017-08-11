@@ -4,17 +4,39 @@ import {Map, Marker, GoogleApiWrapper} from 'google-maps-react';
 
 export class MapContainer extends React.Component {
 
-  constructor(){
-    super();
-    this.state = {markers: []};
+  constructor(props){
+    super(props);
+    this.state = {
+      markers: [],
+      locations: []
+    }
   }
 
   componentWillReceiveProps(nextProps) {
 
-    //console.log("executing componentWillReceiveProps....");
+    if (nextProps.loaded == false) return
+ 
+    const google = nextProps.google;
+    const service = new google.maps.Geocoder();
 
+    nextProps.tweets.map((tweet) => {
+        this.geocodeAddress(google, service, tweet);
+      }
+    );    
+        
   }
 
+  componentDidMount(){
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    // You can access `this.props` and `this.state` here
+    // This function should return a boolean, whether the component should re-render.
+  
+    console.log("updating...");
+    return true;
+  }
+  
   // On map ready, process geocoder for each tweet
   onMapReady = (mapProps, map) => {
     const {google} = mapProps;
@@ -35,26 +57,37 @@ export class MapContainer extends React.Component {
   }
   
   // Return location (google maps api) from given address
-  geocodeAddress = (service, tweet) => {
+  geocodeAddress = (google, service, tweet) => {
+  
+    if (tweet == null) return;
+    if (tweet.location == "") return;
+    if (this.state.locations.indexOf(tweet.location) > -1) return;
+
     let address = tweet.location;
-    const {google} = this.props;
     const maps = google.maps;
+
+    const locations = this.state.locations.slice();
+    locations.push(address);
+    this.setState({
+      locations: locations
+    })
 
     service.geocode({ 'address': address }, (results, status) => {
           if (status === maps.GeocoderStatus.OK) {
             let location = results[0].geometry.location;
 
             // lets keep markers immutable
-            const markers = this.state.markers.slice();
+            const markers = this.state.markers.slice();            
+
             markers.push(this.renderTweet(tweet, location));
 
             this.setState({
-              markers: markers
+              markers: markers,
             });
             
           } else {
             // Oops, something was wrong
-            console.log("Geocode unsuccessful:" + address);
+            console.log("Geocode unsuccessful:" + address + " status: " + status);
           }
         });
   }
